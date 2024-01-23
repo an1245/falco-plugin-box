@@ -1,0 +1,166 @@
+
+- list: box_known_countries
+  items: [United Kingdom, Italy, France]
+
+- rule: Box - Successful Login
+  desc: User successfully logged into Box
+  condition: box.eventtype in (LOGIN, ADD_LOGIN_ACTIVITY_DEVICE) and box.country in (box_known_countries)
+  output: >
+    Box Plugin: User %box.userlogin (uid: %box.userid name: %box.username) logged on successfully (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: INFORMATIONAL
+  source: box
+  tags: [box]
+
+  
+- rule: Box - User Logged on as Administrator
+  desc: User Logged on to Box as Administrator
+  condition: box.eventtype=ADMIN_LOGIN
+  output: >
+    Box Plugin: ADMINISTRATOR LOGIN - User %box.userlogin (uid: %box.userid name: %box.username) logged on to Box as Administrator (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Failed Login
+  desc: User failed to log into Box
+  condition: box.eventtype=FAILED_LOGIN
+  output: >
+    Box Plugin: FAILED LOGIN - User %box.userlogin (uid: %box.userid name: %box.username) failed to login on successfully (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - User logged in from unknown country
+  desc: User logged in from unknown country
+  condition: box.eventtype in (LOGIN,ADD_LOGIN_ACTIVITY_DEVICE) and not box.country in (box_known_countries)
+  output: >
+    Box Plugin: LOGIN FROM UNKNOWN COUNTRY - User %box.userlogin (uid: %box.userid name: %box.username) logged in from unkown country (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Multifactor Authentication disabled
+  desc: Multifactor Authentication has been disabled for a device.
+  condition: box.eventtype=MULTI_FACTOR_AUTH_DISABLE
+  output: >
+    Box Plugin: MULTIFACTOR AUTHENTICATION has been DISABLED! for user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Device Trust Check Failed
+  desc: Device Trust Check has failed - ex. MFA Token Check
+  condition: box.eventtype=DEVICE_TRUST_CHECK_FAILED
+  output: >
+    Box Plugin: DEVICE TRUST CHECK FAILED for user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Found Malicious File
+  desc: Found Malicious File (ex. virus)
+  condition: box.eventtype=FILE_MARKED_MALICIOUS
+  output: >
+    Box Plugin: FOUND MALICIOUS FILE! (ex. virus) in user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - New Application Created
+  desc: New Application was created in developer console
+  condition: box.eventtype=APPLICATION_CREATED
+  output: >
+    Box Plugin: New Application was created in developer console user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Revoke oAuth Access Token
+  desc: Revoke oAuth Access Token 
+  condition: box.eventtype=OAUTH2_ACCESS_TOKEN_REVOKE
+  output: >
+    Box Plugin: A box token was revoked - user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Application Login Activity Session invalidated
+  desc: Application Login Activity Session invalidated
+  condition: box.eventtype=REMOVE_LOGIN_ACTIVITY_DEVICE
+  output: >
+    Box Plugin: Box invalidated a user session associated with an app - user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - oAuth Access Token was Created
+  desc: oAuth Access Token was Created 
+  condition: box.eventtype=USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
+  output: >
+    Box Plugin: A box token was created - user: %box.userlogin (uid: %box.userid name: %box.username) by user: %box.created_by_login (uid: %box.created_by_id name: %box.created_by_name).  Details: (IP=%box.ipaddress, city=%box.city, country=%box.country, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Content Accessed from unknown country
+  desc: Content was access in Box Account
+  condition: box.eventtype in (CONTENT_ACCESS, PREVIEW) and not box.country in (box_known_countries)
+  output: >
+    Box Plugin: Content was access from an unknown country. User: %box.created_by_login, Country: %box.country, Item Accessed: (Item Type: %box.sourceitemtype, Item Name: %box.sourceitemname, Item ID: %box.sourceitemid) More Details: (City: %box.city, IP: %box.ipaddress, Box Access Token: %box.access_token_id, Box Event Id=%box.eventid, Timestamp=%box.timestamp)
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - Shield Alert
+  desc: Box issued a shield alert!!
+  condition: box.eventtype startswith "SHIELD_"
+  output: >
+    Box Plugin: Box issued a Shield Alert!! - User: %box.created_by_login, IP Address: %box.ipaddress, Event ID: %box.eventid  - Additional Details: %box.shieldalert
+  priority: WARNING
+  source: box
+  tags: [box]
+
+- rule: Box - New User Created
+  desc: New user created 
+  condition: box.eventtype=NEW_USER
+  output: >
+    Box Plugin: New user created:  User: %box.username, User Login: %box.userlogin, User ID: %box.userid, User Created By: %box.created_by_login, Created By IP: %box.ipaddress, Timestamp=%box.timestamp
+  priority: INFORMATIONAL
+  source: box
+  tags: [box]
+
+- rule: Box - MFA Enabled on User Account
+  desc: MFA Enabled on User Account
+  condition: box.eventtype in (MULTI_FACTOR_AUTH_ENABLE)
+  output: >
+    Box Plugin: MFA Enabled on User Account: User: %box.username, User Login: %box.userlogin, User ID: %box.userid, User Created By: %box.created_by_login, Created By IP: %box.ipaddress, Timestamp=%box.timestamp
+  priority: INFORMATIONAL
+  source: box
+  tags: [box]
+
+- rule: Box - Generated MFA Backup Codes
+  desc: MFA Generated MFA Backup Codes
+  condition: box.eventtype in (MULTI_FACTOR_AUTH_GENERATED_BACKUP_CODE)
+  output: >
+    Box Plugin: MFA - User Generated MFA Backup Codes: User: %box.username, User Login: %box.userlogin, User ID: %box.userid, User Created By: %box.created_by_login, Created By IP: %box.ipaddress, Timestamp=%box.timestamp
+  priority: INFORMATIONAL
+  source: box
+  tags: [box]
+
+#- rule: Box - Catch Everything Else
+#  desc: Catch all events to caught by other rules
+#  condition: box.messagetype=event
+#  output: >
+#    Box Plugin: Caught other event - here are all it's attributes: box.access_token_id=%box.access_token_id, box.eventid=%box.eventid, box.eventtype=%box.eventtype, box.city=%box.city, box.created_by_name=%box.created_by_name, box.created_by_login=%box.created_by_login, box.created_by_id=%box.created_by_id, box.country=%box.country, box.countryisocode=%box.countryisocode, box.continent=%box.continent, box.ekm_id=%box.ekm_id, box.ipaddress=%box.ipaddress, box.messagetype=%box.messagetype, box.servicename=%box.servicename, box.serviceid=%box.serviceid, box.size=%box.size, box.userid=%box.userid, box.username=%box.username, box.userlogin=%box.userlogin, box.timestamp=%box.timestamp, box.versionid=%box.versionid
+#  priority: INFORMATIONAL
+#  source: box
+#  tags: [box]
+
+- rule: Box Plugin Error
+  desc: Errors from the Box plugin are alerted into Falco also 
+  condition: box.eventtype=pluginerror
+  output: >
+    %box.pluginerrormessage
+  priority: WARNING
+  source: box
+  tags: [box]
