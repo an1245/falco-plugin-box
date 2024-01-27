@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	PluginID           uint32 = 16
+	PluginID           uint32 = 15
 	PluginName                = "box"
 	PluginDescription         = "Reads events from Box using API Connection"
 	PluginContact             = "github.com/an1245/falco-plugin-box/"
